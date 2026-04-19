@@ -1,65 +1,122 @@
-import Image from "next/image";
+import SearchBar from '@/components/SearchBar';
+import AuthButton from '@/components/AuthButton';
+import Link from 'next/link';
 
-export default function Home() {
+const EXAMPLE_QUERIES = [
+  { label: '🍜 Food & Nature couple', query: 'I have $3000 for a 7-day trip in August for a couple who loves food and nature' },
+  { label: '🏔️ Adventure solo', query: 'Solo traveler, $2500 budget, 7 days in October, love adventure and hiking' },
+  { label: '🕌 Culture & History', query: '$2000 for a couple, 7 days in March, interested in culture and history' },
+  { label: '🌿 Nature family', query: 'Family of 4, $5000, 7-day trip in July, wildlife and outdoor adventures' },
+];
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="min-h-screen flex flex-col relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 30%, #0c4a6e 60%, #134e4a 100%)',
+      }}
+    >
+      {/* Background decoration */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-5"
+          style={{
+            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        {/* Gradient orbs */}
+        <div className="absolute top-20 left-10 w-72 h-72 bg-teal-500 rounded-full filter blur-3xl opacity-10" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500 rounded-full filter blur-3xl opacity-5" />
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-6xl mx-auto w-full">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl">✈</span>
+          <span className="text-white font-bold text-xl tracking-tight">TripAI</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="flex items-center gap-3">
+          <Link href="/saved" className="text-sm text-blue-200 hover:text-white transition hidden sm:inline">
+            My Trips
+          </Link>
+          <AuthButton />
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-16 text-center">
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm text-teal-200 font-medium mb-8">
+          <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+          AI-Powered Travel Planning
+        </div>
+
+        {/* Headline */}
+        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight mb-6 max-w-4xl">
+          Plan Your{' '}
+          <span
+            style={{
+              background: 'linear-gradient(90deg, #2dd4bf, #38bdf8, #f97316)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Perfect Trip
+          </span>
+        </h1>
+
+        {/* Subtitle */}
+        <p className="text-lg sm:text-xl text-blue-200 max-w-2xl mb-12 leading-relaxed">
+          Just describe your dream trip in your own words. We will instantly suggest 3 amazing
+          destinations with full day-by-day itineraries and budget breakdowns.
+        </p>
+
+        {/* Search Bar */}
+        <div className="w-full max-w-2xl">
+          <SearchBar />
+        </div>
+
+        {/* Example queries */}
+        <div className="mt-10 w-full max-w-2xl">
+          <p className="text-xs text-blue-300/70 uppercase tracking-wider font-medium mb-4">
+            Try an example:
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {EXAMPLE_QUERIES.map(example => (
+              <Link
+                key={example.label}
+                href={`/results?q=${encodeURIComponent(example.query)}`}
+                className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-sm text-blue-100 transition-all duration-200 hover:scale-105 backdrop-blur-sm"
+              >
+                {example.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Feature pills */}
+        <div className="mt-16 flex flex-wrap gap-6 justify-center text-sm text-blue-300/80">
+          {[
+            { icon: '🗺️', text: '6 hand-curated destinations' },
+            { icon: '📅', text: 'Full 7-day itineraries' },
+            { icon: '💰', text: 'Detailed budget breakdowns' },
+            { icon: '🌍', text: 'Hebrew & English support' },
+          ].map(f => (
+            <div key={f.text} className="flex items-center gap-2">
+              <span>{f.icon}</span>
+              <span>{f.text}</span>
+            </div>
+          ))}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 text-center py-6 text-blue-400/50 text-xs">
+        Demo app — uses mock data only. No real API calls.
+      </footer>
     </div>
   );
 }
