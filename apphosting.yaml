@@ -1,0 +1,22 @@
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  concurrency: 80
+
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyBJK7-unbefRjlQK88jdihD98Ma7kfGo5Q
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: tripai-e01af.firebaseapp.com
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: tripai-e01af
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: tripai-e01af.firebasestorage.app
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "777119185127"
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:777119185127:web:38635cf325708caf6c8a42
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-9HNTS7HD1V
+  - variable: ANTHROPIC_API_KEY
+    secret: ANTHROPIC_API_KEY
