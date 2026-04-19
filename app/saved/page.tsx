@@ -100,12 +100,20 @@ export default function SavedTripsPage() {
                     <p className="text-xs text-gray-400 mt-1.5">
                       Saved {trip.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </p>
-                    <Link
-                      href={`/results?q=${encodeURIComponent(trip.query)}`}
-                      className="inline-block mt-3 text-sm text-teal-600 hover:text-teal-700 font-medium"
-                    >
-                      Re-plan this trip →
-                    </Link>
+                    <div className="flex items-center gap-3 mt-3">
+                      <Link
+                        href={`/saved/${trip.id}`}
+                        className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                      >
+                        View trip →
+                      </Link>
+                      <Link
+                        href={`/results?q=${encodeURIComponent(trip.query)}`}
+                        className="text-sm text-gray-400 hover:text-gray-600"
+                      >
+                        Re-plan
+                      </Link>
+                    </div>
                   </div>
                 </div>
                 <button
