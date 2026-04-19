@@ -11,6 +11,7 @@ import SaveTripButton from '@/components/SaveTripButton';
 interface ResultsContentProps {
   request: TripRequest;
   trips: TripPlan[];
+  hideSaveButton?: boolean;
 }
 
 const PREF_LABELS: Record<string, string> = {
@@ -24,7 +25,7 @@ const PREF_LABELS: Record<string, string> = {
   relaxation: 'Relaxation',
 };
 
-export default function ResultsContent({ request, trips }: ResultsContentProps) {
+export default function ResultsContent({ request, trips, hideSaveButton }: ResultsContentProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const selectedPlan = trips[selectedIndex];
@@ -136,7 +137,7 @@ export default function ResultsContent({ request, trips }: ResultsContentProps) 
               <h2 className="text-xl font-bold text-gray-900">
                 {selectedPlan.destination.emoji} {selectedPlan.destination.name} Itinerary
               </h2>
-              <SaveTripButton request={request} plan={selectedPlan} />
+              {!hideSaveButton && <SaveTripButton request={request} plan={selectedPlan} />}
             </div>
             <ItineraryView
               plan={selectedPlan}
