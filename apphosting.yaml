@@ -19,4 +19,7 @@ env:
   - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
     value: G-9HNTS7HD1V
   - variable: ANTHROPIC_API_KEY
-    secret: ANTHROPIC_API_KEY
+    secret: ANTHROPIC_API_KEY@latest
+    availability:
+      - BUILD
+      - RUNTIME
