@@ -8,6 +8,7 @@ import {
   orderBy,
   serverTimestamp,
   Timestamp,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { TripRequest, TripPlan } from "./types";
@@ -55,4 +56,20 @@ export async function getUserTrips(userId: string): Promise<SavedTrip[]> {
 
 export async function deleteTrip(userId: string, tripId: string): Promise<void> {
   await deleteDoc(doc(db, "users", userId, "trips", tripId));
+}
+
+export async function getTrip(
+  userId: string,
+  tripId: string
+): Promise<SavedTrip | null> {
+  const snap = await getDoc(doc(db, "users", userId, "trips", tripId));
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  return {
+    id: snap.id,
+    query: data.query as string,
+    request: data.request as TripRequest,
+    plan: data.plan as TripPlan,
+    createdAt: (data.createdAt as Timestamp)?.toDate() ?? new Date(),
+  };
 }
