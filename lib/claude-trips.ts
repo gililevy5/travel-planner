@@ -15,6 +15,7 @@ interface DestinationSelection {
   matchReasons: string[];
   suggestedDays: number;
   estimatedFlightCost: number; // round-trip per person in USD
+  iataCode: string;
 }
 
 const SELECTION_SCHEMA = {
@@ -50,8 +51,12 @@ const SELECTION_SCHEMA = {
             type: 'number',
             description: 'Round-trip flight cost per person in USD from the traveler\'s origin',
           },
+          iataCode: {
+            type: 'string',
+            description: 'IATA airport code for the main gateway airport of this destination, e.g. "CDG" for Paris, "TYO" for Tokyo, "ATH" for Greek Islands. Use the single most relevant airport code.',
+          },
         },
-        required: ['id', 'name', 'country', 'emoji', 'tagline', 'description', 'highlights', 'matchScore', 'matchReasons', 'suggestedDays', 'estimatedFlightCost'],
+        required: ['id', 'name', 'country', 'emoji', 'tagline', 'description', 'highlights', 'matchScore', 'matchReasons', 'suggestedDays', 'estimatedFlightCost', 'iataCode'],
         additionalProperties: false,
       },
     },
@@ -78,7 +83,8 @@ Scoring guidelines (0–100):
 
 suggestedDays: ideal days to truly experience the destination, capped at the traveler's maximum. Factor in flight duration from origin — long-haul destinations warrant more days to be worthwhile.
 
-estimatedFlightCost: realistic round-trip cost per person in USD from the traveler's origin city.`,
+estimatedFlightCost: realistic round-trip cost per person in USD from the traveler's origin city.
+iataCode: the single IATA airport code for the main gateway airport of the destination (e.g. CDG for France/Paris, NRT for Japan/Tokyo, ATH for Greece/Greek Islands).`,
     messages: [{
       role: 'user',
       content: `Traveler request:
@@ -238,6 +244,7 @@ export async function getSuggestedTrips(request: TripRequest): Promise<TripPlan[
           highlights: s.highlights,
           matchScore: Math.round(Math.min(100, Math.max(0, s.matchScore))),
           matchReasons: s.matchReasons,
+          iataCode: s.iataCode,
         },
         itinerary,
         budget,
