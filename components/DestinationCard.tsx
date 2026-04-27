@@ -1,27 +1,18 @@
 'use client';
 
-import { TripPlan } from '@/lib/types';
+import { TripPlan, CheapestFlight } from '@/lib/types';
 
 interface DestinationCardProps {
   plan: TripPlan;
   selected: boolean;
   onClick: () => void;
   travelers: number;
+  cheapestFlight?: 'loading' | CheapestFlight | null;
 }
 
-const activityTypeColors: Record<string, string> = {
-  food: 'bg-amber-100 text-amber-800',
-  nature: 'bg-emerald-100 text-emerald-800',
-  culture: 'bg-purple-100 text-purple-800',
-  history: 'bg-stone-100 text-stone-800',
-  adventure: 'bg-red-100 text-red-800',
-  beach: 'bg-cyan-100 text-cyan-800',
-  shopping: 'bg-pink-100 text-pink-800',
-};
-
-export default function DestinationCard({ plan, selected, onClick, travelers }: DestinationCardProps) {
+export default function DestinationCard({ plan, selected, onClick, travelers, cheapestFlight }: DestinationCardProps) {
   const { destination, budget } = plan;
-  const perPerson = Math.round(budget.total / 2);
+  const perPerson = Math.round(budget.total / travelers);
 
   return (
     <button
@@ -76,11 +67,22 @@ export default function DestinationCard({ plan, selected, onClick, travelers }: 
         </ul>
       )}
 
+      {/* Flight badge */}
+      {cheapestFlight === 'loading' && (
+        <div className="mb-3 h-7 w-48 rounded-full bg-gray-200 animate-pulse" />
+      )}
+      {cheapestFlight && cheapestFlight !== 'loading' && (
+        <div className="mb-3 inline-flex items-center gap-1.5 bg-teal-50 border border-teal-200 rounded-full px-3 py-1 text-xs font-medium text-teal-700">
+          <span>✈</span>
+          <span>From ${cheapestFlight.pricePerPerson.toLocaleString()}/person · {cheapestFlight.departureDate.slice(5).replace('-', '/')}–{cheapestFlight.returnDate.slice(5).replace('-', '/')}</span>
+        </div>
+      )}
+
       {/* Budget */}
       <div className={`rounded-xl p-3 ${selected ? 'bg-teal-50' : 'bg-gray-50'}`}>
         <div className="flex justify-between items-center">
           <div>
-            <p className="text-xs text-gray-500 font-medium">Est. total (couple)</p>
+            <p className="text-xs text-gray-500 font-medium">Est. total ({travelers} traveler{travelers !== 1 ? 's' : ''})</p>
             <p className="text-xl font-bold text-gray-900">${budget.total.toLocaleString()}</p>
           </div>
           <div className="text-right">
@@ -90,7 +92,6 @@ export default function DestinationCard({ plan, selected, onClick, travelers }: 
         </div>
       </div>
 
-      {/* Selected indicator */}
       {selected && (
         <div className="mt-3 flex items-center justify-center gap-2 text-teal-600 text-sm font-semibold">
           <span>▼</span> Viewing full itinerary
