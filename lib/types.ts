@@ -18,6 +18,7 @@ export interface Destination {
   highlights: string[];
   matchScore: number; // 0-100
   matchReasons: string[];
+  iataCode: string;
 }
 
 export interface Activity {
@@ -51,4 +52,36 @@ export interface TripPlan {
   destination: Destination;
   itinerary: DayPlan[];
   budget: BudgetBreakdown;
+}
+
+export interface CheapestFlight {
+  departureDate: string;     // YYYY-MM-DD
+  returnDate: string;        // YYYY-MM-DD
+  pricePerPerson: number;
+  total: number;             // all travelers combined
+}
+
+export interface FlightOffer {
+  id: string;
+  departureDate: string;
+  returnDate: string;
+  pricePerPerson: number;
+  total: number;
+  outboundDuration: string;      // e.g. "5h 30m"
+  inboundDuration: string;
+  totalDurationMinutes: number;  // for sorting
+  stops: number;                 // 0 = direct
+  airline: string;               // IATA carrier code e.g. "LY"
+  outboundDeparture: string;     // HH:MM
+  outboundArrival: string;
+  inboundDeparture: string;
+  inboundArrival: string;
+  originAirport: string;         // IATA
+  destinationAirport: string;    // IATA
+}
+
+export interface FlightFilters {
+  directOnly: boolean;
+  maxStops: number | null;        // null = any
+  maxDurationHours: number | null; // null = any
 }
