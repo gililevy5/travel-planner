@@ -8,9 +8,10 @@ interface ItineraryViewProps {
   plan: TripPlan;
   travelers: number;
   userBudget: number;
+  realFlightCost?: number;
 }
 
-export default function ItineraryView({ plan, travelers, userBudget }: ItineraryViewProps) {
+export default function ItineraryView({ plan, travelers, userBudget, realFlightCost }: ItineraryViewProps) {
   const { destination, itinerary, budget } = plan;
 
   return (
@@ -31,8 +32,6 @@ export default function ItineraryView({ plan, travelers, userBudget }: Itinerary
           </div>
         </div>
         <p className="text-blue-100 leading-relaxed">{destination.description}</p>
-
-        {/* Match reasons */}
         <div className="flex flex-wrap gap-2 mt-4">
           {destination.matchReasons.map((reason, i) => (
             <span key={i} className="text-xs bg-white/15 rounded-full px-3 py-1 text-blue-50">
@@ -43,18 +42,20 @@ export default function ItineraryView({ plan, travelers, userBudget }: Itinerary
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Itinerary */}
         <div className="lg:col-span-2 space-y-3">
           <h3 className="font-bold text-gray-900 text-xl mb-4">{itinerary.length}-Day Itinerary</h3>
           {itinerary.map(day => (
             <DayCard key={day.day} day={day} travelers={travelers} />
           ))}
         </div>
-
-        {/* Budget sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-4">
-            <BudgetBreakdown budget={budget} userBudget={userBudget} travelers={travelers} />
+            <BudgetBreakdown
+              budget={budget}
+              userBudget={userBudget}
+              travelers={travelers}
+              realFlightCost={realFlightCost}
+            />
           </div>
         </div>
       </div>
