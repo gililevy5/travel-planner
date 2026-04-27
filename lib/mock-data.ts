@@ -14,6 +14,7 @@ export const destinations: Destination[] = [
     highlights: ['Alfama District', 'Time Out Market', 'Belém Tower', 'Sintra Day Trip', 'Fado Music'],
     matchScore: 0,
     matchReasons: [],
+    iataCode: 'LIS',
   },
   {
     id: 'chiangmai',
@@ -26,6 +27,7 @@ export const destinations: Destination[] = [
     highlights: ['Doi Inthanon', 'Night Bazaar', 'Elephant Sanctuary', 'Thai Cooking Class', 'Doi Suthep Temple'],
     matchScore: 0,
     matchReasons: [],
+    iataCode: 'CNX',
   },
   {
     id: 'costarica',
@@ -38,6 +40,7 @@ export const destinations: Destination[] = [
     highlights: ['Arenal Volcano', 'Manuel Antonio', 'Monteverde Cloud Forest', 'Zip-lining', 'Wildlife Watching'],
     matchScore: 0,
     matchReasons: [],
+    iataCode: 'SJO',
   },
   {
     id: 'marrakech',
@@ -50,6 +53,7 @@ export const destinations: Destination[] = [
     highlights: ['Jemaa el-Fnaa', 'Majorelle Garden', 'Souks & Medina', 'Atlas Mountains', 'Sahara Day Trip'],
     matchScore: 0,
     matchReasons: [],
+    iataCode: 'RAK',
   },
   {
     id: 'newzealand',
@@ -62,6 +66,7 @@ export const destinations: Destination[] = [
     highlights: ['Milford Sound', 'Bungee Jumping', 'Fiordland NP', 'Queenstown Markets', 'Winery Tours'],
     matchScore: 0,
     matchReasons: [],
+    iataCode: 'ZQN',
   },
   {
     id: 'kyoto',
@@ -74,6 +79,7 @@ export const destinations: Destination[] = [
     highlights: ['Fushimi Inari', 'Arashiyama Bamboo', 'Gion District', 'Tea Ceremony', 'Nishiki Market'],
     matchScore: 0,
     matchReasons: [],
+    iataCode: 'ITM',
   },
 ];
 
