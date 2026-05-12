@@ -133,6 +133,7 @@ export function parseRequest(input: string): TripRequest {
     travelers,
     preferences,
     origin: 'Israel',
+    originIATA: 'TLV',
     rawInput: input,
   };
 }

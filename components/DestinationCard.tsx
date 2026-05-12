@@ -8,9 +8,10 @@ interface DestinationCardProps {
   onClick: () => void;
   travelers: number;
   cheapestFlight?: 'loading' | CheapestFlight | null;
+  loading?: boolean; // itinerary still generating
 }
 
-export default function DestinationCard({ plan, selected, onClick, travelers, cheapestFlight }: DestinationCardProps) {
+export default function DestinationCard({ plan, selected, onClick, travelers, cheapestFlight, loading }: DestinationCardProps) {
   const { destination, budget } = plan;
   const perPerson = Math.round(budget.total / travelers);
 
@@ -80,16 +81,23 @@ export default function DestinationCard({ plan, selected, onClick, travelers, ch
 
       {/* Budget */}
       <div className={`rounded-xl p-3 ${selected ? 'bg-teal-50' : 'bg-gray-50'}`}>
-        <div className="flex justify-between items-center">
-          <div>
-            <p className="text-xs text-gray-500 font-medium">Est. total ({travelers} traveler{travelers !== 1 ? 's' : ''})</p>
-            <p className="text-xl font-bold text-gray-900">${budget.total.toLocaleString()}</p>
+        {loading ? (
+          <div className="space-y-2">
+            <div className="h-3 w-32 rounded-full bg-gray-200 animate-pulse" />
+            <div className="h-6 w-24 rounded-full bg-gray-200 animate-pulse" />
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-500 font-medium">Per person</p>
-            <p className="text-lg font-semibold text-teal-600">${perPerson.toLocaleString()}</p>
+        ) : (
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-xs text-gray-500 font-medium">Est. total ({travelers} traveler{travelers !== 1 ? 's' : ''})</p>
+              <p className="text-xl font-bold text-gray-900">${budget.total.toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-gray-500 font-medium">Per person</p>
+              <p className="text-lg font-semibold text-teal-600">${perPerson.toLocaleString()}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {selected && (

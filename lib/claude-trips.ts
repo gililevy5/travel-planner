@@ -3,7 +3,7 @@ import { TripRequest, TripPlan, DayPlan, BudgetBreakdown } from './types';
 
 // ─── Phase 1: Destination selection ──────────────────────────────────────────
 
-interface DestinationSelection {
+export interface DestinationSelection {
   id: string;
   name: string;
   country: string;
@@ -18,93 +18,86 @@ interface DestinationSelection {
   iataCode: string;
 }
 
-const SELECTION_SCHEMA = {
+const PARSE_AND_SELECT_SCHEMA = {
   type: 'object',
   properties: {
+    request: {
+      type: 'object',
+      properties: {
+        budget: { type: 'number', description: 'Total budget in USD' },
+        duration: { type: 'number', description: 'Max trip duration in days' },
+        month: { type: 'string', description: 'Month of travel, full English name e.g. "August"' },
+        travelers: { type: 'number', description: 'Number of travelers' },
+        preferences: {
+          type: 'array',
+          items: { type: 'string', enum: ['food', 'nature', 'culture', 'history', 'beach', 'adventure', 'shopping', 'relaxation'] },
+        },
+        origin: { type: 'string', description: 'Departure city or country, e.g. "Tel Aviv"' },
+        originIATA: { type: 'string', description: 'IATA airport code for the origin, e.g. "TLV" for Tel Aviv, "LHR" for London, "JFK" for New York' },
+      },
+      required: ['budget', 'duration', 'month', 'travelers', 'preferences', 'origin', 'originIATA'],
+      additionalProperties: false,
+    },
     selections: {
       type: 'array',
       items: {
         type: 'object',
         properties: {
-          id: { type: 'string', description: 'Unique kebab-case id, e.g. "greek-islands" or "kyoto"' },
-          name: { type: 'string', description: 'Destination name — can be a city, region, island group, or country' },
+          id: { type: 'string', description: 'Unique kebab-case id' },
+          name: { type: 'string', description: 'Destination name — city, region, island group, or country' },
           country: { type: 'string' },
-          emoji: { type: 'string', description: 'Single emoji representing the destination' },
-          tagline: { type: 'string', description: 'One evocative sentence' },
-          description: { type: 'string', description: '2–3 sentences on what makes this destination special' },
-          highlights: {
-            type: 'array',
-            items: { type: 'string' },
-            description: '4–6 top highlights or attractions',
-          },
+          emoji: { type: 'string', description: 'Single emoji' },
+          tagline: { type: 'string', description: 'One short evocative sentence, max 10 words' },
+          description: { type: 'string', description: '1–2 sentences max' },
+          highlights: { type: 'array', items: { type: 'string' }, description: 'Exactly 3 top highlights, 2–3 words each' },
           matchScore: { type: 'number', description: 'Match score 0–100' },
-          matchReasons: {
-            type: 'array',
-            items: { type: 'string' },
-            description: '2–4 concise reasons this fits the traveler request',
-          },
-          suggestedDays: {
-            type: 'number',
-            description: 'Ideal number of days, capped at the traveler\'s maximum duration',
-          },
-          estimatedFlightCost: {
-            type: 'number',
-            description: 'Round-trip flight cost per person in USD from the traveler\'s origin',
-          },
-          iataCode: {
-            type: 'string',
-            description: 'IATA airport code for the main gateway airport of this destination, e.g. "CDG" for Paris, "TYO" for Tokyo, "ATH" for Greek Islands. Use the single most relevant airport code.',
-          },
+          matchReasons: { type: 'array', items: { type: 'string' }, description: 'Exactly 2 reasons, one short phrase each' },
+          suggestedDays: { type: 'number', description: 'Ideal days, capped at max duration' },
+          estimatedFlightCost: { type: 'number', description: 'Round-trip per person in USD' },
+          iataCode: { type: 'string', description: 'IATA gateway airport code, e.g. CDG, NRT, ATH' },
         },
         required: ['id', 'name', 'country', 'emoji', 'tagline', 'description', 'highlights', 'matchScore', 'matchReasons', 'suggestedDays', 'estimatedFlightCost', 'iataCode'],
         additionalProperties: false,
       },
     },
   },
-  required: ['selections'],
+  required: ['request', 'selections'],
   additionalProperties: false,
 };
 
-async function selectDestinations(request: TripRequest): Promise<DestinationSelection[]> {
+export async function parseAndSelectDestinations(rawInput: string): Promise<{ request: TripRequest; selections: DestinationSelection[] }> {
   const response = await anthropic.messages.create({
-    model: 'claude-opus-4-6',
-    max_tokens: 2048,
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 1024,
     output_config: {
-      format: { type: 'json_schema', schema: SELECTION_SCHEMA },
+      format: { type: 'json_schema', schema: PARSE_AND_SELECT_SCHEMA },
     },
-    system: `You are an expert travel advisor. Given a traveler's request, suggest the best 1–3 destinations worldwide. You are not limited to any catalog — recommend any destination that genuinely fits the traveler's needs. Always return at least 1 match.
+    system: `You are a travel planning assistant. Given a free-text trip request (English or Hebrew), do two things in one pass:
 
-Think beyond single cities: suggest countries, regions, island groups, or multi-city routes when that better fits the request (e.g. "Japan" for a culture-seeker, "Greek Islands" for a beach honeymoon, "Patagonia" for adventure).
+1. PARSE the request into structured fields:
+   - budget: total in USD (convert ₪×0.27, €×1.08, £×1.27; round to nearest 100; default 3000)
+   - duration: days (default 7)
+   - month: full English month name (default "August")
+   - travelers: count (default 2)
+   - preferences: subset of [food, nature, culture, history, beach, adventure, shopping, relaxation]
+   - origin: departure city/country (look for "from X", "flying from", "מישראל"; default "Israel")
+   - originIATA: IATA airport code for origin (e.g. TLV for Israel/Tel Aviv, LHR for London, JFK for New York, CDG for Paris)
 
-Scoring guidelines (0–100):
-- Budget fit (40 pts): Does the estimated total trip cost (flights × travelers + other costs) fit within the traveler's budget? Be generous — within ±50% still earns partial credit.
-- Preference match (50 pts): How many of the traveler's interests does this destination cover?
-- Seasonal fit (10 pts): Is the travel month ideal for this destination?
+2. SELECT the best 1–3 destinations worldwide that match the parsed request. Think beyond single cities — suggest regions, island groups, or countries when fitting.
 
-suggestedDays: ideal days to truly experience the destination, capped at the traveler's maximum. Factor in flight duration from origin — long-haul destinations warrant more days to be worthwhile.
-
-estimatedFlightCost: realistic round-trip cost per person in USD from the traveler's origin city.
-iataCode: the single IATA airport code for the main gateway airport of the destination (e.g. CDG for France/Paris, NRT for Japan/Tokyo, ATH for Greece/Greek Islands).`,
-    messages: [{
-      role: 'user',
-      content: `Traveler request:
-- Origin: ${request.origin}
-- Budget: $${request.budget.toLocaleString()} total for ${request.travelers} traveler${request.travelers > 1 ? 's' : ''}
-- Maximum duration: ${request.duration} days
-- Month: ${request.month}
-- Travelers: ${request.travelers === 1 ? 'solo' : request.travelers === 2 ? 'couple' : `group of ${request.travelers}`}
-- Interests: ${request.preferences.join(', ')}
-- Raw input: "${request.rawInput}"
-
-Suggest the best 1–3 destinations worldwide.`,
-    }],
+Scoring (0–100): budget fit 40pts, preference match 50pts, seasonal fit 10pts.
+suggestedDays: capped at parsed duration. estimatedFlightCost: round-trip per person in USD from origin.
+iataCode: single IATA code for the main gateway airport.`,
+    messages: [{ role: 'user', content: rawInput }],
   });
 
   const text = response.content.find(b => b.type === 'text');
-  if (!text || text.type !== 'text') throw new Error('No response from Claude destination selector');
-  const { selections } = JSON.parse(text.text) as { selections: DestinationSelection[] };
-  console.log('[claude-trips] selections:', JSON.stringify(selections.map(s => ({ id: s.id, name: s.name, days: s.suggestedDays, flight: s.estimatedFlightCost })), null, 2));
-  return selections;
+  if (!text || text.type !== 'text') throw new Error('No response from Claude');
+  const data = JSON.parse(text.text) as { request: Omit<TripRequest, 'rawInput'>; selections: DestinationSelection[] };
+  return {
+    request: { ...data.request, rawInput },
+    selections: data.selections,
+  };
 }
 
 // ─── Phase 2: Itinerary + budget generation ───────────────────────────────────
@@ -227,30 +220,34 @@ function scaleItinerary(base: DayPlan[], targetDays: number): DayPlan[] {
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export async function getSuggestedTrips(request: TripRequest): Promise<TripPlan[]> {
-  const selections = await selectDestinations(request);
+function selectionToDestination(s: DestinationSelection) {
+  return {
+    id: s.id,
+    name: s.name,
+    country: s.country,
+    emoji: s.emoji,
+    tagline: s.tagline,
+    description: s.description,
+    highlights: s.highlights,
+    matchScore: Math.round(Math.min(100, Math.max(0, s.matchScore))),
+    matchReasons: s.matchReasons,
+    iataCode: s.iataCode,
+  };
+}
 
-  const trips = await Promise.all(
-    selections.map(async (s): Promise<TripPlan> => {
-      const { itinerary, budget } = await generatePlan(s, request);
-      return {
-        destination: {
-          id: s.id,
-          name: s.name,
-          country: s.country,
-          emoji: s.emoji,
-          tagline: s.tagline,
-          description: s.description,
-          highlights: s.highlights,
-          matchScore: Math.round(Math.min(100, Math.max(0, s.matchScore))),
-          matchReasons: s.matchReasons,
-          iataCode: s.iataCode,
-        },
-        itinerary,
-        budget,
-      };
-    }),
-  );
+export async function getPlanForSelection(
+  selection: DestinationSelection,
+  request: TripRequest,
+): Promise<TripPlan> {
+  const { itinerary, budget } = await generatePlan(selection, request);
+  return {
+    destination: selectionToDestination(selection),
+    itinerary,
+    budget,
+  };
+}
 
-  return trips;
+export async function getSuggestedTrips(rawInput: string): Promise<TripPlan[]> {
+  const { request, selections } = await parseAndSelectDestinations(rawInput);
+  return Promise.all(selections.map(s => getPlanForSelection(s, request)));
 }

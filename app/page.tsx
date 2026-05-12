@@ -3,10 +3,10 @@ import AuthButton from '@/components/AuthButton';
 import Link from 'next/link';
 
 const EXAMPLE_QUERIES = [
-  { label: '🍜 Food & Nature couple', query: 'I have $3000 for a 7-day trip in August for a couple who loves food and nature' },
-  { label: '🏔️ Adventure solo', query: 'Solo traveler, $2500 budget, 7 days in October, love adventure and hiking' },
-  { label: '🕌 Culture & History', query: '$2000 for a couple, 7 days in March, interested in culture and history' },
-  { label: '🌿 Nature family', query: 'Family of 4, $5000, 7-day trip in July, wildlife and outdoor adventures' },
+  { label: '🍜 Food & Nature couple', query: 'Flying from Tel Aviv, $3000 for a 7-day trip in August for a couple who loves food and nature' },
+  { label: '🏔️ Adventure solo', query: 'Solo traveler from London, $2500 budget, 7 days in October, love adventure and hiking' },
+  { label: '🕌 Culture & History', query: 'From New York, $2000 for a couple, 7 days in March, interested in culture and history' },
+  { label: '🌿 Nature family', query: 'Family of 4 from Israel, $5000, 7-day trip in July, wildlife and outdoor adventures' },
 ];
 
 export default function HomePage() {
@@ -100,10 +100,10 @@ export default function HomePage() {
         {/* Feature pills */}
         <div className="mt-16 flex flex-wrap gap-6 justify-center text-sm text-blue-300/80">
           {[
-            { icon: '🗺️', text: '6 hand-curated destinations' },
-            { icon: '📅', text: 'Full 7-day itineraries' },
-            { icon: '💰', text: 'Detailed budget breakdowns' },
-            { icon: '🌍', text: 'Hebrew & English support' },
+            { icon: '🌍', text: 'Any destination worldwide' },
+            { icon: '📅', text: 'Full day-by-day itineraries' },
+            { icon: '✈', text: 'Real flight prices via Amadeus' },
+            { icon: '🗣️', text: 'Hebrew & English support' },
           ].map(f => (
             <div key={f.text} className="flex items-center gap-2">
               <span>{f.icon}</span>
@@ -115,7 +115,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="relative z-10 text-center py-6 text-blue-400/50 text-xs">
-        Demo app — uses mock data only. No real API calls.
+        Powered by Claude AI · Real flight data by Amadeus
       </footer>
     </div>
   );

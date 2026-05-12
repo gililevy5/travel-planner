@@ -147,6 +147,7 @@ export async function getFlightOffers(
         inboundArrival: inLast.arrival.at.slice(11, 16),
         originAirport: outFirst.departure.iataCode,
         destinationAirport: outLast.arrival.iataCode,
+        departureToken: '',
       };
     });
 

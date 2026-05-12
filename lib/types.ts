@@ -5,6 +5,7 @@ export interface TripRequest {
   travelers: number;
   preferences: string[]; // e.g. ['food', 'nature', 'culture']
   origin: string; // departure city or country, e.g. "Tel Aviv" or "Israel"
+  originIATA: string; // IATA code for origin airport, e.g. "TLV"
   rawInput: string;
 }
 
@@ -71,13 +72,14 @@ export interface FlightOffer {
   inboundDuration: string;
   totalDurationMinutes: number;  // for sorting
   stops: number;                 // 0 = direct
-  airline: string;               // IATA carrier code e.g. "LY"
+  airline: string;
   outboundDeparture: string;     // HH:MM
   outboundArrival: string;
   inboundDeparture: string;
   inboundArrival: string;
   originAirport: string;         // IATA
   destinationAirport: string;    // IATA
+  departureToken: string;        // SerpAPI token for fetching booking links
 }
 
 export interface FlightFilters {
